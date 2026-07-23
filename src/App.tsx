@@ -50,9 +50,17 @@ export default function App() {
 
   // Load file details when active file changes
   useEffect(() => {
-    if (activeFileKey === 'custom-live-file') {
-      setRootNode(null);
-      setSelectedNode(null);
+    const isMock = activeFileKey === 'saas-landing-hero' || 
+                   activeFileKey === 'analytics-dashboard' || 
+                   activeFileKey === 'minimal-contact-form';
+
+    // If it's not a mock key, it's a live key which has already been loaded
+    // directly in state via handleLoadLiveFile. Return to prevent duplicate fetches.
+    if (!isMock) {
+      if (activeFileKey === 'custom-live-file') {
+        setRootNode(null);
+        setSelectedNode(null);
+      }
       return;
     }
 
