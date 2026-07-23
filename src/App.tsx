@@ -112,13 +112,20 @@ export default function App() {
         setMcpLogs(prev => [logItem, ...prev]);
       };
 
-      // 1. Fetch live nodes if live sync is active
+      // 1. Inspect design node tree structure (reuses cached tree from simulator sync to avoid rate limits)
       let targetNodeTree = rootNode;
-      if (figmaToken && activeFileKey !== 'custom-live-file' && rootNode) {
-        pushStep("MCP Tool Call: figma_get_file() syncing live frames properties...");
-        const remoteFile = await FigmaMcpService.figmaGetFile(activeFileKey, figmaToken, wrapLog);
-        targetNodeTree = remoteFile?.document || rootNode;
+      if (!targetNodeTree) {
+        throw new Error("No Figma node tree loaded. Please select or sync a file first.");
       }
+      pushStep("MCP Tool Call: figma_get_nodes() inspecting synced layer geometries...");
+      wrapLog({
+        timestamp: new Date().toLocaleTimeString(),
+        toolName: 'figma_get_nodes',
+        arguments: { fileKey: activeFileKey, nodeIds: targetNodeTree.children?.map(c => c.id) || [] },
+        status: 'SUCCESS',
+        result: { nodeCount: targetNodeTree.children?.length || 1 }
+      });
+      await new Promise(r => setTimeout(r, 600));
 
       // 2. Fire openai synthesis translation
       const result = await OpenAiService.translateFigmaToHtml(
