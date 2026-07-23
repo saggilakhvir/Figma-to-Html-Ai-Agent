@@ -247,8 +247,12 @@ ${JSON.stringify(cleanTree, null, 2)}`;
         }
       };
     } catch (err: any) {
-      onStep(`Error during OpenAI synthesis: ${err.message}`, 4);
-      throw err;
+      let errMsg = err.message || String(err);
+      if (errMsg.toLowerCase().includes('failed to fetch')) {
+        errMsg = "Failed to fetch. Verify your internet connection, API URL typos, adblocker policies, or local CORS settings (e.g. OLLAMA_ORIGINS='*' for Ollama).";
+      }
+      onStep(`Error during OpenAI synthesis: ${errMsg}`, 4);
+      throw new Error(errMsg);
     }
   }
 
