@@ -50,13 +50,20 @@ export const AgentConsole: React.FC<AgentConsoleProps> = ({
                 <Sliders size={12} /> Model
               </label>
               <select
-                value={selectedModel}
-                onChange={(e) => onModelChange(e.target.value)}
+                value={selectedModel === 'gpt-4o' || selectedModel === 'gpt-4o-mini' ? selectedModel : 'custom'}
+                onChange={(e) => {
+                  if (e.target.value === 'custom') {
+                    onModelChange('deepseek-chat'); // Default suggestion
+                  } else {
+                    onModelChange(e.target.value);
+                  }
+                }}
                 disabled={status === 'EXECUTING'}
                 className="console-select"
               >
                 <option value="gpt-4o">gpt-4o (Premium)</option>
                 <option value="gpt-4o-mini">gpt-4o-mini (Fast & Light)</option>
+                <option value="custom">Custom Model...</option>
               </select>
             </div>
 
@@ -74,6 +81,20 @@ export const AgentConsole: React.FC<AgentConsoleProps> = ({
               />
             </div>
           </div>
+          {selectedModel !== 'gpt-4o' && selectedModel !== 'gpt-4o-mini' && (
+            <div className="config-item" style={{ marginTop: '12px' }}>
+              <label className="selector-label">Custom Model ID</label>
+              <input
+                type="text"
+                placeholder="Enter custom model identifier (e.g. deepseek-chat)..."
+                value={selectedModel}
+                onChange={(e) => onModelChange(e.target.value)}
+                disabled={status === 'EXECUTING'}
+                className="live-key-textbox"
+                style={{ fontSize: '12px', padding: '8px 10px', width: '100%' }}
+              />
+            </div>
+          )}
         </div>
 
         {/* Terminal Window */}

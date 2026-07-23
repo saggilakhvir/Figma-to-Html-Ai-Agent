@@ -26,18 +26,20 @@ export class OpenAiService {
       fileKey: string;
       figmaNodeTree: any;
       openaiKey?: string;
+      apiBase?: string;
       modelName?: string;
       temperature?: number;
     },
     onStep: (stepText: string, stepIndex: number) => void
   ): Promise<AgentResult> {
-    const { fileKey, figmaNodeTree, openaiKey, modelName = 'gpt-4o', temperature = 0.2 } = options;
+    const { fileKey, figmaNodeTree, openaiKey, apiBase, modelName = 'gpt-4o', temperature = 0.2 } = options;
     const startTime = Date.now();
 
     // Determine if we are running in Live Mode or Sandbox Mode
     if (openaiKey && openaiKey.trim().length > 0) {
       return this.executeLiveTranslation(
         openaiKey,
+        apiBase || 'https://api.openai.com/v1',
         modelName,
         temperature,
         figmaNodeTree,
@@ -128,6 +130,7 @@ export class OpenAiService {
    */
   private static async executeLiveTranslation(
     apiKey: string,
+    apiBase: string,
     model: string,
     temperature: number,
     figmaNodeTree: any,
@@ -174,7 +177,8 @@ Return EXACTLY a JSON object with this structure:
 ${JSON.stringify(cleanTree, null, 2)}`;
 
     try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const cleanApiBase = apiBase.replace(/\/+$/, '');
+      const response = await fetch(`${cleanApiBase}/chat/completions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

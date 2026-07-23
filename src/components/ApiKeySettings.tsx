@@ -21,18 +21,21 @@ interface ApiKeySettingsProps {
   isOpen: boolean;
   onClose: () => void;
   openaiKey: string;
+  apiBase: string;
   figmaToken: string;
-  onSave: (openaiKey: string, figmaToken: string) => void;
+  onSave: (openaiKey: string, apiBase: string, figmaToken: string) => void;
 }
 
 export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
   isOpen,
   onClose,
   openaiKey,
+  apiBase,
   figmaToken,
   onSave
 }) => {
   const [localOpenAiKey, setLocalOpenAiKey] = useState(openaiKey);
+  const [localApiBase, setLocalApiBase] = useState(apiBase);
   const [localFigmaToken, setLocalFigmaToken] = useState(figmaToken);
   const [showOpenAi, setShowOpenAi] = useState(false);
   const [showFigma, setShowFigma] = useState(false);
@@ -40,7 +43,7 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
   if (!isOpen) return null;
 
   const handleSave = () => {
-    onSave(localOpenAiKey.trim(), localFigmaToken.trim());
+    onSave(localOpenAiKey.trim(), localApiBase.trim(), localFigmaToken.trim());
     onClose();
   };
 
@@ -93,6 +96,26 @@ export const ApiKeySettings: React.FC<ApiKeySettingsProps> = ({
               </div>
               <span className="field-hint">
                 Leave blank to run in Sandbox Mode (uses mock completions fallback).
+              </span>
+            </div>
+
+            {/* OpenAI Compatible API Base URL Field */}
+            <div className="form-field-group">
+              <label className="field-label flex-center gap-2">
+                <Key size={14} className="icon-cyan" />
+                API Base URL
+              </label>
+              <div className="textbox-wrapper">
+                <input
+                  type="text"
+                  placeholder="https://api.openai.com/v1"
+                  value={localApiBase}
+                  onChange={(e) => setLocalApiBase(e.target.value)}
+                  className="modal-textbox"
+                />
+              </div>
+              <span className="field-hint">
+                OpenAI-compatible base URL. Defaults to <code>https://api.openai.com/v1</code>.
               </span>
             </div>
 

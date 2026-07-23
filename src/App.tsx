@@ -13,6 +13,7 @@ import type { FigmaNode } from './utils/mockDesigns';
 export default function App() {
   // Credentials loaded from localStorage
   const [openaiKey, setOpenaiKey] = useState<string>(() => localStorage.getItem('aura_openai_key') || '');
+  const [apiBase, setApiBase] = useState<string>(() => localStorage.getItem('aura_api_base') || 'https://api.openai.com/v1');
   const [figmaToken, setFigmaToken] = useState<string>(() => localStorage.getItem('aura_figma_token') || '');
 
   // File states
@@ -81,10 +82,12 @@ export default function App() {
   }, [activeFileKey, figmaToken]);
 
   // Credentials change save
-  const handleSaveCredentials = (newOpenaiKey: string, newFigmaToken: string) => {
+  const handleSaveCredentials = (newOpenaiKey: string, newApiBase: string, newFigmaToken: string) => {
     setOpenaiKey(newOpenaiKey);
+    setApiBase(newApiBase);
     setFigmaToken(newFigmaToken);
     localStorage.setItem('aura_openai_key', newOpenaiKey);
+    localStorage.setItem('aura_api_base', newApiBase);
     localStorage.setItem('aura_figma_token', newFigmaToken);
   };
 
@@ -123,6 +126,7 @@ export default function App() {
           fileKey: activeFileKey,
           figmaNodeTree: targetNodeTree,
           openaiKey: openaiKey,
+          apiBase: apiBase,
           modelName: selectedModel,
           temperature: temperature
         },
@@ -247,6 +251,7 @@ export default function App() {
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         openaiKey={openaiKey}
+        apiBase={apiBase}
         figmaToken={figmaToken}
         onSave={handleSaveCredentials}
       />
